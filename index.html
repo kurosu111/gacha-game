@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>GACHA ROGUE v1.0 Prototype</title>
+<style>
+:root{
+  --bg:#04070d; --panel:#0d1422; --panel2:#141d30; --panel3:#1d2740;
+  --line:#ffffff17; --text:#f6f1e8; --muted:#9da9bf;
+  --violet:#8d63ff; --violet2:#c287ff; --gold:#d8ad5f; --cyan:#63d8ff;
+  --danger:#f15d7d; --green:#66d6a0; --orange:#f0a558;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+body{background:radial-gradient(circle at 50% -10%,#241a47 0,#0c1425 32%,#050912 62%,#020409 100%)}
+button,select{font:inherit}
+button{touch-action:manipulation}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding:12px 12px 118px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.brand{font:900 13px/1 Georgia,"Yu Mincho",serif;letter-spacing:.14em}
+.brand span{color:var(--gold);font-size:10px}
+.resources{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:11px;padding:7px 9px;border:1px solid var(--line);background:#ffffff08;border-radius:999px}
+.panel{border:1px solid #d8ad5f2a;background:linear-gradient(180deg,#121a2cde,#090f1bdc);border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:0 18px 40px #0006}
+.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.sectionTitle h2,.sectionTitle h3{margin:0;font-family:Georgia,"Yu Mincho",serif}
+.sectionTitle h2{font-size:17px}.sectionTitle h3{font-size:14px}
+.sub{font-size:10px;color:var(--muted);line-height:1.5}
+.btn{border:1px solid var(--line);background:#222d47;color:#fff;border-radius:13px;padding:11px;font-weight:900}
+.btn.primary{background:linear-gradient(135deg,#6749df,#9d61e7);border-color:#cfadff66}
+.btn.gold{background:linear-gradient(135deg,#8b6028,#d2a64e);border-color:#e0bf7c77}
+.btn.green{background:linear-gradient(135deg,#318664,#5dc994);border-color:#86e7b955}
+.btn.danger{background:linear-gradient(135deg,#762d42,#d95574)}
+.btn.ghost{background:#ffffff08}
+.btn:disabled{opacity:.35}
+.bar{height:9px;background:#ffffff10;border-radius:99px;overflow:hidden;border:1px solid #ffffff0b}
+.fill{height:100%;background:linear-gradient(90deg,#4bd09b,#a2e96f)}
+.fill.enemy{background:linear-gradient(90deg,#ec5d78,#f3a15c)}
+.homeHero{height:500px;position:relative;overflow:hidden;padding:0;background:
+ radial-gradient(circle at 67% 16%,#8f63ff33,transparent 26%),
+ linear-gradient(180deg,#151c38,#09101f 67%,#050811)}
+.skyStars{position:absolute;inset:0;background:
+ radial-gradient(circle at 16% 17%,#fff8 0 1px,transparent 2px),
+ radial-gradient(circle at 72% 22%,#fff8 0 1px,transparent 2px),
+ radial-gradient(circle at 34% 38%,#a98bff99 0 1px,transparent 2px),
+ radial-gradient(circle at 88% 48%,#fff7 0 1px,transparent 2px),
+ radial-gradient(circle at 15% 58%,#9ddfff77 0 1px,transparent 2px);
+ background-size:90px 110px,120px 140px,150px 130px,170px 150px,130px 160px;opacity:.65}
+.moon{position:absolute;right:-10px;top:44px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,#a37aff30,#6034a80d 55%,transparent 70%)}
+.towerVisual{position:absolute;right:10px;top:58px;width:165px;height:335px;opacity:.65}
+.towerVisual .spire{position:absolute;left:48px;bottom:0;width:72px;height:300px;background:linear-gradient(90deg,#171c2d,#64448d,#151b2c);clip-path:polygon(42% 0,58% 0,64% 13%,74% 13%,78% 28%,88% 28%,96% 100%,4% 100%,12% 28%,22% 28%,26% 13%,36% 13%)}
+.towerVisual .win{position:absolute;left:72px;width:24px;height:8px;border-radius:50%;background:#9a65ff;box-shadow:0 0 14px #9563ff}
+.towerVisual .w1{bottom:70px}.towerVisual .w2{bottom:125px}.towerVisual .w3{bottom:180px}.towerVisual .w4{bottom:235px}
+.heroChar{position:absolute;left:50%;bottom:72px;width:235px;height:340px;transform:translateX(-50%);filter:drop-shadow(0 18px 22px #000b);animation:breathe 4.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateX(-50%) translateY(-4px) scale(1.008)}}
+.heroChar .hairBack{position:absolute;left:38px;top:24px;width:162px;height:220px;background:linear-gradient(155deg,#f0f2ff,#aeb8d7 54%,#66708e);border-radius:48% 52% 35% 35%;clip-path:polygon(18% 3%,82% 0,100% 30%,87% 98%,68% 74%,50% 100%,31% 75%,12% 100%,0 28%)}
+.heroChar .face{position:absolute;left:78px;top:59px;width:82px;height:100px;border-radius:48% 48% 53% 53%;background:linear-gradient(145deg,#f9ddd5,#d6aaa5);z-index:4}
+.heroChar .eye{position:absolute;top:45px;width:13px;height:7px;background:#794be9;border-radius:50%;box-shadow:0 0 8px #a17dff;animation:blink 5.8s infinite}
+@keyframes blink{0%,47%,51%,100%{transform:scaleY(1)}49%{transform:scaleY(.08)}}
+.heroChar .eye.l{left:18px}.heroChar .eye.r{right:18px}
+.heroChar .mouth{position:absolute;left:35px;bottom:18px;width:13px;height:3px;background:#a46e77;border-radius:50%}
+.heroChar .body{position:absolute;left:43px;top:146px;width:154px;height:185px;background:linear-gradient(90deg,#111722,#3a425b 48%,#0d121c);clip-path:polygon(27% 0,73% 0,100% 100%,0 100%);border-radius:24px}
+.heroChar .armor{position:absolute;left:75px;top:165px;width:91px;height:138px;border:2px solid #d8ad5f77;background:linear-gradient(160deg,#ffffff12,#0005);clip-path:polygon(50% 0,100% 18%,82% 100%,18% 100%,0 18%);z-index:3}
+.heroChar .chestCrystal{position:absolute;left:108px;top:183px;width:30px;height:43px;background:linear-gradient(#e7c7ff,#7040ec);clip-path:polygon(50% 0,100% 28%,70% 100%,30% 100%,0 28%);box-shadow:0 0 20px #a567ff;z-index:5}
+.heroChar .ribbon{position:absolute;left:138px;top:39px;width:46px;height:25px;background:#6d49e4;clip-path:polygon(0 50%,38% 0,50% 38%,62% 0,100% 50%,63% 100%,50% 62%,37% 100%);z-index:5;filter:drop-shadow(0 0 10px #9269ff)}
+.heroHUD{position:absolute;inset:0;padding:13px;z-index:8}
+.runLabel{font-size:10px;letter-spacing:.13em;color:#cad3e5}
+.hpBlock{width:53%;margin-top:8px}
+.hpHead{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
+.heroDialogue{position:absolute;left:14px;right:14px;bottom:72px;z-index:9;border:1px solid #d8ad5f55;background:#050913da;border-radius:12px;padding:10px 12px;backdrop-filter:blur(8px);font-size:11px}
+.heroDialogue b{display:block;color:var(--gold);font-size:10px;margin-bottom:3px}
+.advanceBtn{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:10;width:72%;padding:13px;border-radius:14px;border:1px solid #e1bf7c88;background:linear-gradient(135deg,#6848e2,#a160e8);color:#fff;font-weight:900;box-shadow:0 0 24px #7e56ff55}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.quick .btn{min-height:64px}
+.gachaStage{height:420px;position:relative;overflow:hidden;border:1px solid #d8ad5f45;border-radius:18px;margin-bottom:10px;background:
+ radial-gradient(circle at 50% 47%,#905eff4a,transparent 28%),
+ linear-gradient(180deg,#10162b,#070b14)}
+.machine{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:310px;height:320px}
+.ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #b783ff7d;animation:spin 15s linear infinite}
+.r1{width:270px;height:270px}.r2{width:220px;height:220px;border-style:dashed;animation-duration:10s;animation-direction:reverse}.r3{width:172px;height:172px;border-color:#d8ad5f88;animation-duration:20s}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:126px;height:158px;background:linear-gradient(145deg,#e8c9ff,#8556ff 45%,#311e80);clip-path:polygon(50% 0,92% 25%,78% 84%,50% 100%,21% 84%,7% 27%);box-shadow:0 0 50px #9761ff;animation:corePulse 2.3s ease-in-out infinite}
+@keyframes corePulse{50%{filter:brightness(1.32);transform:translate(-50%,-50%) scale(1.03)}}
+.pylon{position:absolute;top:70px;width:42px;height:182px;border:1px solid #d8ad5f55;background:linear-gradient(#29213e,#101523);border-radius:17px}
+.pylon:after{content:"";position:absolute;left:9px;top:26px;width:22px;height:48px;background:#7751ff;clip-path:polygon(50% 0,100% 28%,70% 100%,30% 100%,0 28%);box-shadow:0 0 18px #9a6cff}
+.pylon.l{left:9px}.pylon.r{right:9px}
+.modPart{position:absolute;display:none}
+.gachaStage.has-extra .modPart.extra{display:block;left:38px;bottom:44px;width:58px;height:58px;border:2px solid #c58cff77;border-radius:50%;box-shadow:0 0 18px #9e65ff inset}
+.gachaStage.has-free .modPart.free{display:block;right:38px;bottom:44px;width:58px;height:58px;border:2px dashed #d8ad5f99;border-radius:50%;animation:spin 6s linear infinite}
+.gachaStage.has-pity .modPart.pity{display:block;left:50%;top:32px;transform:translateX(-50%);width:80px;height:12px;background:linear-gradient(90deg,#6e49e7,#d693ff);border-radius:99px;box-shadow:0 0 16px #b477ff}
+.rankBadge{position:absolute;left:11px;top:11px;z-index:5;border:1px solid #d8ad5f66;background:#080d18dd;border-radius:12px;padding:7px 10px;font-size:9px}
+.rankBadge b{display:block;color:#d391ff;font-size:22px}
+.rateOpen{position:absolute;right:11px;top:11px;z-index:5}
+.modChips{position:absolute;left:11px;right:11px;bottom:11px;display:flex;gap:5px;overflow:auto;z-index:5}
+.chip{white-space:nowrap;font-size:8px;padding:6px 8px;border:1px solid #aa73ff55;background:#171128dd;border-radius:999px}
+.rates{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.rate{text-align:center;border:1px solid var(--line);background:#ffffff08;border-radius:10px;padding:7px 3px;font-size:9px}
+.rate b{display:block;font-size:13px}
+.N{color:#b9c2d2}.R{color:#63d4ff}.SR{color:#bf82ff}.SSR{color:#efc25e}
+.pullButtons{display:grid;grid-template-columns:1fr 1.15fr;gap:7px;margin-top:9px}
+.resultGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+.pullCard{border:1px solid var(--line);background:#ffffff07;border-radius:10px;padding:5px 2px;text-align:center;font-size:8px}
+.portrait{height:48px;border-radius:7px;background:radial-gradient(circle at 50% 28%,#e1c8ff4d,#1a2338 72%);display:grid;place-items:center;font-size:22px;margin-bottom:4px}
+.revealOverlay{position:fixed;inset:0;background:#02040af5;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px}
+.revealBox{width:min(430px,100%);text-align:center}
+.revealMachine{height:320px;position:relative;border:1px solid #d8ad5f44;border-radius:20px;background:radial-gradient(circle,#7448e94d,#080c16 62%);overflow:hidden}
+.revealCrystal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:118px;height:150px;background:linear-gradient(145deg,#e9d2ff,#7b4cef 52%,#251765);clip-path:polygon(50% 0,92% 25%,78% 84%,50% 100%,21% 84%,7% 27%);box-shadow:0 0 60px #9864ff;transition:.5s}
+.revealMachine.stage2 .revealCrystal{transform:translate(-50%,-50%) scale(1.12);filter:brightness(1.5)}
+.revealMachine.stage3 .revealCrystal{box-shadow:0 0 90px var(--revealColor);background:linear-gradient(145deg,#fff,var(--revealColor) 46%,#251765)}
+.revealMachine.stage4 .revealCrystal{transform:translate(-50%,-50%) scale(1.7);opacity:0;filter:brightness(2.4)}
+.shards{position:absolute;inset:0;opacity:0;transition:.35s}
+.stage4 .shards{opacity:1;background:
+ radial-gradient(circle at 25% 35%,var(--revealColor) 0 3px,transparent 4px),
+ radial-gradient(circle at 70% 25%,var(--revealColor) 0 5px,transparent 6px),
+ radial-gradient(circle at 67% 72%,var(--revealColor) 0 4px,transparent 5px),
+ radial-gradient(circle at 30% 70%,var(--revealColor) 0 4px,transparent 5px)}
+.revealCharacter{position:absolute;inset:20px;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;transform:scale(.92);transition:.45s}
+.stage5 .revealCharacter{opacity:1;transform:scale(1)}
+.revealCharacter .bigIcon{font-size:88px;filter:drop-shadow(0 0 20px var(--revealColor))}
+.revealCharacter h2{margin:8px 0 2px;font-family:Georgia,"Yu Mincho",serif;font-size:21px}
+.revealCharacter .rarity{font-weight:900;font-size:16px}
+.revealText{margin-top:12px;min-height:22px;color:#dfe5f3;font-size:11px}
+.skip{position:absolute;right:12px;top:12px}
+.partyTop{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.partySlot{min-height:122px;border:1px solid #d8ad5f40;border-radius:14px;background:linear-gradient(#1a2440,#0b111e);padding:7px;text-align:center}
+.partySlot .portrait{height:73px;font-size:32px}
+.partySlot b{font-size:9px}.partySlot small{font-size:8px;color:var(--muted)}
+.filters{display:flex;gap:5px;overflow:auto;margin:8px 0}
+.filters .btn{white-space:nowrap;padding:7px 10px}
+.roster{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.unit{position:relative;border:1px solid var(--line);background:#101827;border-radius:13px;padding:6px;color:#fff;text-align:left}
+.unit.selected{border-color:var(--gold);box-shadow:0 0 0 1px #d8ad5f55 inset}
+.unit .portrait{height:87px;font-size:34px}
+.unitName{font-size:9px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unitMeta{font-size:8px;color:var(--muted);margin-top:2px;line-height:1.4}
+.choiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice{min-height:178px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(#1d2842,#0c1321);padding:10px}
+.choiceScene{height:82px;border-radius:10px;margin-bottom:8px;display:grid;place-items:center;font-size:42px;background:radial-gradient(circle,#875cff3f,#0c1321 72%)}
+.choice h3{font-size:12px;margin:0 0 5px;font-family:Georgia,"Yu Mincho",serif}
+.risk{font-size:8px;color:var(--gold);margin:5px 0}
+.battleStage{height:300px;position:relative;overflow:hidden;border:1px solid #d8ad5f33;border-radius:16px;background:
+ radial-gradient(circle at 50% 80%,#6a45aa25,transparent 30%),
+ linear-gradient(180deg,#151d34,#0b101b 70%)}
+.battleFloor{position:absolute;left:-10%;right:-10%;bottom:-25px;height:110px;border-radius:50%;background:radial-gradient(ellipse,#4c346d55,#101523 72%)}
+.fighter{position:absolute;bottom:44px;width:115px;height:165px;transition:.18s}
+.fighter.player{left:28px}.fighter.enemy{right:28px}
+.fighter.player.attack{transform:translateX(70px)}.fighter.enemy.hit{transform:translateX(8px);filter:brightness(1.8)}
+.fighter.enemy.attack{transform:translateX(-70px)}.fighter.player.hit{transform:translateX(-8px);filter:brightness(1.8)}
+.fighterBody{position:absolute;left:25px;bottom:0;width:65px;height:120px;background:linear-gradient(#4a5271,#121722);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%)}
+.fighterHead{position:absolute;left:35px;top:3px;width:46px;height:54px;border-radius:48%;background:#d8b5ac}
+.fighterHair{position:absolute;left:26px;top:0;width:64px;height:70px;border-radius:50% 50% 42% 42%;background:linear-gradient(#e6e9fa,#7e89aa);clip-path:polygon(10% 0,90% 0,100% 70%,75% 55%,50% 100%,25% 55%,0 70%)}
+.enemyShape{position:absolute;inset:12px;background:linear-gradient(145deg,#1c2231,#6b2b6f 48%,#0d111c);clip-path:polygon(50% 0,72% 20%,94% 34%,81% 57%,100% 92%,68% 78%,50% 100%,32% 78%,0 92%,19% 57%,6% 34%,28% 20%);filter:drop-shadow(0 0 16px #b047a1)}
+.enemyEye{position:absolute;left:45px;top:66px;width:26px;height:15px;border-radius:50%;background:#ff5ca9;box-shadow:0 0 18px #ff4db1}
+.battleHud{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.battleLog{min-height:38px;margin-top:8px;font-size:10px;color:var(--muted)}
+.mods .mod{padding:9px 0;border-bottom:1px solid #ffffff0c}.mods .mod:last-child{border:0}.mods b{font-size:10px}.mods p{font-size:8px;color:var(--muted);margin:3px 0 0}
+.bottom{position:fixed;left:0;right:0;bottom:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#04070d 24%);z-index:40}
+.nav{max-width:480px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);background:#0c1321ef;border:1px solid #d8ad5f2d;border-radius:17px;padding:6px;backdrop-filter:blur(12px)}
+.nav button{border:0;background:transparent;color:#8793aa;border-radius:11px;padding:8px 2px;font-size:9px;font-weight:900}
+.nav button.active{background:#ffffff0d;color:#f4e7ce}
+.modal{position:fixed;inset:0;background:#000b;z-index:90;display:grid;place-items:end center;padding:14px}
+.sheet{width:min(460px,100%);max-height:74vh;overflow:auto;border:1px solid #d8ad5f44;background:#0e1625;border-radius:20px;padding:15px}
+@media(max-width:350px){.choiceGrid{grid-template-columns:1fr}.resultGrid{grid-template-columns:repeat(4,1fr)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="bottom"><div class="nav">
+<button id="nav-home" onclick="showPage('home')">⌂<br>ホーム</button>
+<button id="nav-run" onclick="showPage('run')">◇<br>進行</button>
+<button id="nav-gacha" onclick="showPage('gacha')">✦<br>ガチャ</button>
+<button id="nav-party" onclick="showPage('party')">♟<br>編成</button>
+</div></div>
+<div id="overlay"></div>
+<script>
+(function(){
+"use strict";
+const KEY="gachaRogueV1";
+const catalog={
+N:[
+ {name:"灰塔衛士 アルド",short:"アルド",title:"灰塔防衛隊",atk:5,hp:30,icon:"♜"},
+ {name:"晶脈採掘士 ミレア",short:"ミレア",title:"結晶回収班",atk:6,hp:25,icon:"◆"},
+ {name:"灯火斥候 ノエル",short:"ノエル",title:"深層案内人",atk:7,hp:22,icon:"✧"}
+],
+R:[
+ {name:"遺構斥候 リゼット・ノクス",short:"リゼット",title:"残響追跡",atk:8,hp:36,icon:"☽"},
+ {name:"蒼晶術士 フィオナ・レイス",short:"フィオナ",title:"晶壁展開",atk:8,hp:40,icon:"❄"},
+ {name:"雷杭騎士 ヴェルナ・クロイツ",short:"ヴェルナ",title:"帯電追撃",atk:10,hp:32,icon:"ϟ"}
+],
+SR:[
+ {name:"紫電機士 セレネ・アークレイ",short:"セレネ",title:"共鳴加速",atk:12,hp:46,icon:"✦"},
+ {name:"月蝕祈装 エルネスタ・ルミエール",short:"エルネスタ",title:"月蝕の加護",atk:11,hp:52,icon:"☾"},
+ {name:"氷葬剣姫 イリス・フェルノート",short:"イリス",title:"凍結連鎖",atk:13,hp:43,icon:"❅"}
+],
+SSR:[
+ {name:"星蝕のエリシア・ヴァルクレイン",short:"エリシア",title:"星蝕共鳴",atk:16,hp:56,icon:"✺"},
+ {name:"深淵観測者 ノクティア・ゼロ",short:"ノクティア",title:"因果観測",atk:15,hp:61,icon:"◉"},
+ {name:"天晶皇女 アステリア・セレス",short:"アステリア",title:"天晶顕現",atk:18,hp:50,icon:"♛"}
+]};
+const mods=[
+ {id:"rplus",name:"青晶増幅器",desc:"R以上の排出率 +5pt"},
+ {id:"srplus",name:"紫晶共振炉",desc:"SR以上の排出率 +1pt"},
+ {id:"pity",name:"三連補正機構",desc:"Nを3回連続で引くと次回R以上"},
+ {id:"free",name:"共鳴抽選回路",desc:"SR以上を引くと無料単発 +1"},
+ {id:"cheap",name:"圧縮召喚槽",desc:"10連コスト -1（最低6）"},
+ {id:"extra",name:"増設槽・双晶",desc:"10連の排出数 +1"},
+ {id:"heal",name:"生命変換管",desc:"Rを引くたびHPを3回復"},
+ {id:"refund",name:"残滓回収器",desc:"N排出時25%で石 +1"}
+];
+const nodeMeta={
+ battle:["⚔","通常戦闘","石とゴールドを獲得","標準リスク"],
+ elite:["☠","深層強敵","勝利で改造を確定獲得","高リスク / 高報酬"],
+ rest:["♨","晶泉休息地","最大HPの45%回復","安全"],
+ shop:["⚖","漂泊商会","回復・石を購入","戦闘なし"],
+ event:["?","残響イベント","未知の取引が発生","結果不明"],
+ mod:["⚙","廃棄工房","ガチャ装置を改造","戦闘なし"],
+ skip:["↝","迂回坑道","報酬なしで安全に進む","完全安全"],
+ boss:["◉","階層守護者","5層ごとの関門","BOSS"]
+};
+function fresh(){
+ return {gems:14,gold:40,hp:100,maxHp:100,step:1,maxStep:20,roster:[],party:[],mods:[],
+ nextId:1,rBonus:0,srBonus:0,ssrBonus:0,tenCost:9,tenExtra:0,freePulls:0,nStreak:0,
+ lastResults:[],lastChoices:null,wins:0,runOver:false,msg:"",filter:"ALL",sort:"rarity"};
+}
+let s=fresh();
+try{const raw=localStorage.getItem(KEY);if(raw)s=Object.assign(fresh(),JSON.parse(raw))}catch(e){s=fresh()}
+const $=q=>document.querySelector(q);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+function rank(r){return({N:0,R:1,SR:2,SSR:3})[r]}
+function has(id){return s.mods.includes(id)}
+function rates(){
+ let ssr=.5+s.ssrBonus, sr=4.5+s.srBonus+(has("srplus")?1:0), r=20+s.rBonus+(has("rplus")?5:0);
+ return {N:Math.max(0,100-r-sr-ssr),R:r,SR:sr,SSR:ssr};
+}
+function partyObjs(){return s.party.map(id=>s.roster.find(c=>c.id===id)).filter(Boolean)}
+function power(){return Math.round(partyObjs().reduce((a,c)=>a+c.atk*2+c.hp*.25,0))}
+function leader(){return partyObjs()[0]||null}
+function header(){
+ return `<div class="top"><div class="brand">GACHA ROGUE <span>v1.0 prototype</span></div>
+ <div class="resources"><span class="pill">✦ ${s.gems}</span><span class="pill">● ${s.gold}</span></div></div>`;
+}
+function activate(p){["home","run","gacha","party"].forEach(n=>document.getElementById("nav-"+n)?.classList.toggle("active",n===p))}
+function hpBlock(){
+ return `<div class="hpBlock"><div class="hpHead"><span>HP</span><b>${s.hp}/${s.maxHp}</b></div>
+ <div class="bar"><div class="fill" style="width:${Math.max(0,s.hp/s.maxHp*100)}%"></div></div></div>`;
+}
+function heroArt(){
+ return `<div class="skyStars"></div><div class="moon"></div><div class="towerVisual"><div class="spire"></div><i class="win w1"></i><i class="win w2"></i><i class="win w3"></i><i class="win w4"></i></div>
+ <div class="heroChar"><div class="hairBack"></div><div class="face"><i class="eye l"></i><i class="eye r"></i><i class="mouth"></i></div><div class="body"></div><div class="armor"></div><div class="chestCrystal"></div><div class="ribbon"></div></div>`;
+}
+function home(){
+ const l=leader(), name=l?l.name:"星蝕のエリシア・ヴァルクレイン";
+ const line=l?`「第${s.step}層……このHPなら、まだ判断できる。」`:"「まずは召喚装置を起動して、契約者を集めよう。」";
+ return header()+`<section class="panel homeHero">${heroArt()}<div class="heroHUD"><div class="runLabel">RUN ${String(s.step).padStart(2,"0")} / 20</div>${hpBlock()}</div>
+ <div class="heroDialogue"><b>${name}</b>${line}</div><button class="advanceBtn" onclick="showPage('run')">▶ 次へ進む</button></section>
+ <div class="panel"><div class="quick"><button class="btn ghost" onclick="showPage('gacha')">✦<br>召喚装置</button><button class="btn ghost" onclick="showPage('party')">♟<br>編成</button><button class="btn ghost" onclick="showMods()">⚙<br>改造 ${s.mods.length}</button></div></div>
+ <div class="panel"><div class="sectionTitle"><h3>RUN STATUS</h3><span class="sub">${s.msg||"深層へ向かえ"}</span></div>
+ <div class="quick"><div class="btn ghost" style="text-align:center">戦力<br><b>${power()}</b></div><div class="btn ghost" style="text-align:center">勝利<br><b>${s.wins}</b></div><div class="btn ghost" style="text-align:center">階層<br><b>${s.step}/20</b></div></div></div>`;
+}
+function machineClasses(){return["extra","free","pity"].filter(x=>has(x)).map(x=>"has-"+x).join(" ")}
+function modChips(){
+ if(!s.mods.length)return `<span class="chip">未改造</span>`;
+ return s.mods.map(id=>{const m=mods.find(x=>x.id===id);return `<span class="chip">◆ ${m.name}</span>`}).join("");
+}
+function results(){
+ if(!s.lastResults.length)return `<p class="sub" style="margin-top:9px">結晶は静かに脈動している。</p>`;
+ return `<div class="resultGrid">${s.lastResults.map(c=>`<div class="pullCard"><div class="portrait">${c.icon}</div><b class="${c.r}">${c.r}</b><div>${c.short}</div></div>`).join("")}</div>`;
+}
+function gacha(){
+ const r=rates(),cost=Math.max(6,s.tenCost);
+ return header()+`<div class="gachaStage ${machineClasses()}"><div class="rankBadge">改造ランク<b>${s.mods.length<2?"C":s.mods.length<5?"B":"A+"}</b></div>
+ <button class="btn ghost rateOpen" onclick="showRates()">提供割合</button>
+ <div class="machine"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="pylon l"></div><div class="pylon r"></div><div class="core"></div><div class="modPart extra"></div><div class="modPart free"></div><div class="modPart pity"></div></div>
+ <div class="modChips">${modChips()}</div></div>
+ <div class="panel"><div class="sectionTitle"><h2>深層結晶召喚・改壱式</h2><span class="sub">三連補正 ${Math.min(s.nStreak,3)}/3</span></div>
+ <div class="rates"><div class="rate N"><b>${r.N.toFixed(1)}%</b>N</div><div class="rate R"><b>${r.R.toFixed(1)}%</b>R</div><div class="rate SR"><b>${r.SR.toFixed(1)}%</b>SR</div><div class="rate SSR"><b>${r.SSR.toFixed(1)}%</b>SSR</div></div>
+ <div class="pullButtons"><button class="btn primary" onclick="startPull(1,1)" ${s.gems<1?"disabled":""}>1回召喚<br>✦ 1</button><button class="btn gold" onclick="startPull(10,${cost})" ${s.gems<cost?"disabled":""}>10回召喚<br>✦ ${cost}${s.tenExtra?` / +${s.tenExtra}枠`:""}</button></div>
+ ${s.freePulls?`<button class="btn green" style="width:100%;margin-top:7px" onclick="startFreePull()">共鳴無料召喚 ×${s.freePulls}</button>`:""}${results()}</div>
+ <div class="panel"><div class="sectionTitle"><h3>装置状態</h3><button class="btn ghost" onclick="showMods()">改造一覧</button></div><p class="sub">改造は確率だけでなく、装置の追加リング・補正ゲージ・増設槽として見た目にも反映される。</p></div>`;
+}
+function createChar(r){
+ const base=catalog[r][Math.floor(Math.random()*catalog[r].length)];
+ return {id:s.nextId++,name:base.name,short:base.short,title:base.title,r,atk:base.atk,hp:base.hp,icon:base.icon};
+}
+function rollRarity(force=false){
+ const rt=rates();
+ if(force){const total=rt.R+rt.SR+rt.SSR,x=Math.random()*total;return x<rt.SSR?"SSR":x<rt.SSR+rt.SR?"SR":"R"}
+ const x=Math.random()*100;
+ if(x<rt.SSR)return"SSR";
+ if(x<rt.SSR+rt.SR)return"SR";
+ if(x<rt.SSR+rt.SR+rt.R)return"R";
+ return"N";
+}
+function onePull(){
+ const force=has("pity")&&s.nStreak>=3,r=rollRarity(force),c=createChar(r);
+ s.nStreak=r==="N"?s.nStreak+1:0;
+ if((r==="SR"||r==="SSR")&&has("free"))s.freePulls++;
+ if(r==="R"&&has("heal"))s.hp=Math.min(s.maxHp,s.hp+3);
+ if(r==="N"&&has("refund")&&Math.random()<.25)s.gems++;
+ s.roster.push(c); if(s.party.length<3)s.party.push(c.id); return c;
+}
+function rarityColor(r){return r==="SSR"?"#f0c35e":r==="SR"?"#bf82ff":r==="R"?"#63d4ff":"#b9c2d2"}
+function animatePull(results,done){
+ let idx=0;
+ const overlay=document.getElementById("overlay");
+ function reveal(){
+  const c=results[idx],color=rarityColor(c.r);
+  overlay.innerHTML=`<div class="revealOverlay"><div class="revealBox"><div class="revealMachine" id="revMachine" style="--revealColor:${color}">
+  <button class="btn ghost skip" onclick="finishReveal()">SKIP</button><div class="revealCrystal"></div><div class="shards"></div>
+  <div class="revealCharacter"><div class="bigIcon">${c.icon}</div><div class="rarity ${c.r}">${c.r}</div><h2>${c.name}</h2><div class="sub">${c.title}</div></div></div>
+  <div class="revealText" id="revealText">装置を起動しています…</div><button class="btn primary" id="revealNext" style="width:100%;margin-top:8px" disabled>${idx===results.length-1?"結果へ":"次へ"}</button></div></div>`;
+  const box=document.getElementById("revMachine"),txt=document.getElementById("revealText"),btn=document.getElementById("revealNext");
+  const stages=[
+   [350,()=>{box.classList.add("stage2");txt.textContent="結晶反応を確認…"}],
+   [750,()=>{box.classList.add("stage3");txt.textContent=`${c.r}反応 — 光量上昇`}],
+   [1150,()=>{box.classList.add("stage4");txt.textContent="結晶開封"}],
+   [1500,()=>{box.classList.add("stage5");txt.textContent=`${idx+1} / ${results.length}　${c.name}`;btn.disabled=false}]
+  ];
+  stages.forEach(x=>setTimeout(x[1],x[0]));
+  btn.onclick=()=>{idx++;if(idx<results.length)reveal();else finishReveal()};
+ }
+ window.finishReveal=()=>{overlay.innerHTML="";done()};
+ reveal();
+}
+window.startPull=(n,cost)=>{
+ if(s.gems<cost)return;s.gems-=cost;
+ const total=n+(n===10?s.tenExtra:0),arr=[];for(let i=0;i<total;i++)arr.push(onePull());
+ s.lastResults=arr;save();animatePull(arr,()=>showPage("gacha"));
+};
+window.startFreePull=()=>{
+ if(!s.freePulls)return;s.freePulls--;const arr=[onePull()];s.lastResults=arr;save();animatePull(arr,()=>showPage("gacha"));
+};
+function party(){
+ let arr=[...s.roster];
+ if(s.filter!=="ALL")arr=arr.filter(c=>c.r===s.filter);
+ arr.sort((a,b)=>s.sort==="power"?(b.atk*2+b.hp*.25)-(a.atk*2+a.hp*.25):rank(b.r)-rank(a.r));
+ const p=partyObjs();
+ return header()+`<div class="panel"><div class="sectionTitle"><h2>現在の編成</h2><span class="sub">${s.party.length}/3</span></div>
+ <div class="partyTop">${[0,1,2].map(i=>{const c=p[i];return c?`<div class="partySlot"><div class="portrait">${c.icon}</div><b class="${c.r}">${c.r}</b><br><b>${c.short}</b><br><small>ATK ${c.atk} / HP ${c.hp}</small></div>`:`<div class="partySlot"><div class="portrait">＋</div><small>EMPTY</small></div>`}).join("")}</div></div>
+ <div class="panel"><div class="sectionTitle"><h2>契約者一覧</h2><select onchange="setSort(this.value)"><option value="rarity" ${s.sort==="rarity"?"selected":""}>レア度順</option><option value="power" ${s.sort==="power"?"selected":""}>戦力順</option></select></div>
+ <div class="filters">${["ALL","SSR","SR","R","N"].map(f=>`<button class="btn ${s.filter===f?"primary":"ghost"}" onclick="setFilter('${f}')">${f}</button>`).join("")}</div>
+ <div class="roster">${arr.length?arr.map(c=>`<button class="unit ${s.party.includes(c.id)?"selected":""}" onclick="toggleParty(${c.id})"><div class="portrait">${c.icon}</div><div class="${c.r}" style="font-size:9px;font-weight:900">${c.r}</div><div class="unitName">${c.name}</div><div class="unitMeta">${c.title}<br>ATK ${c.atk} / HP ${c.hp}</div></button>`).join(""):`<p class="sub">該当する契約者はいない。</p>`}</div></div>`;
+}
+window.setFilter=f=>{s.filter=f;save();showPage("party")};
+window.setSort=v=>{s.sort=v;save();showPage("party")};
+window.toggleParty=id=>{const i=s.party.indexOf(id);if(i>=0)s.party.splice(i,1);else if(s.party.length<3)s.party.push(id);save();showPage("party")};
+function choices(){
+ if(s.step%5===0)return["boss"];
+ const pool=["battle","battle","rest","shop","event","mod","skip"];if(s.step>=5)pool.push("elite");
+ let a=pool[Math.floor(Math.random()*pool.length)],b;do{b=pool[Math.floor(Math.random()*pool.length)]}while(a===b);return[a,b];
+}
+function run(){
+ if(s.runOver)return header()+`<div class="panel"><div class="sectionTitle"><h2>RUN COMPLETE</h2></div><p class="sub">最上階を制覇した。完成したガチャ装置と契約者編成が、このランの答えだった。</p><button class="btn primary" style="width:100%;margin-top:8px" onclick="resetRun()">新しいランを開始</button></div>`;
+ const ch=s.lastChoices||choices();s.lastChoices=ch;save();
+ return header()+`<div class="panel"><div class="sectionTitle"><h2>第 ${s.step} 層</h2><span class="sub">HP ${s.hp}/${s.maxHp}</span></div><div class="bar"><div class="fill" style="width:${s.hp/s.maxHp*100}%"></div></div></div>
+ <div class="choiceGrid">${ch.map(t=>{const m=nodeMeta[t];return`<div class="choice"><div class="choiceScene">${m[0]}</div><h3>${m[1]}</h3><p class="sub">${m[2]}</p><div class="risk">${m[3]}</div><button class="btn primary" style="width:100%" onclick="takeNode('${t}')">選択</button></div>`}).join("")}</div><div id="encounter"></div>`;
+}
+window.takeNode=t=>{
+ if(["battle","elite","boss"].includes(t))battle(t);
+ else if(t==="rest"){s.hp=Math.min(s.maxHp,s.hp+Math.ceil(s.maxHp*.45));advance("晶泉で傷を癒した。")}
+ else if(t==="skip")advance("迂回坑道を選び、安全に進んだ。");
+ else if(t==="mod")modChoice();
+ else if(t==="shop")shop();
+ else eventNode();
+};
+function enemyStats(t){
+ const prog=s.step/20;let hp=55+prog*130,atk=7+prog*12;
+ if(t==="elite"){hp*=1.55;atk*=1.35}
+ if(t==="boss"){hp*=1.8;atk*=1.45}
+ return {hp:Math.round(hp),atk:Math.round(atk)};
+}
+function battle(t){
+ const party=partyObjs();if(!party.length){alert("先に召喚して編成を作ろう");return}
+ const es=enemyStats(t);let enemyHp=es.hp,playerHp=s.hp,atk=party.reduce((a,c)=>a+c.atk,0);
+ document.getElementById("encounter").innerHTML=`<div class="panel" style="margin-top:10px"><div class="sectionTitle"><h2>${nodeMeta[t][1]}</h2><span class="sub">戦力 ${power()}</span></div>
+ <div class="battleStage"><div class="battleFloor"></div><div class="fighter player" id="playerF"><div class="fighterHair"></div><div class="fighterHead"></div><div class="fighterBody"></div></div>
+ <div class="fighter enemy" id="enemyF"><div class="enemyShape"></div><div class="enemyEye"></div></div></div>
+ <div class="battleHud"><div><div class="sub">契約者 HP <b id="pHpNum">${playerHp}</b></div><div class="bar"><div class="fill" id="pHpBar" style="width:${playerHp/s.maxHp*100}%"></div></div></div>
+ <div><div class="sub">敵 HP <b id="eHpNum">${enemyHp}</b></div><div class="bar"><div class="fill enemy" id="eHpBar" style="width:100%"></div></div></div></div>
+ <button class="btn danger" id="attackBtn" style="width:100%;margin-top:9px">攻撃</button><div class="battleLog" id="battleLog">敵の動きを見極めろ。</div></div>`;
+ const pF=$("#playerF"),eF=$("#enemyF"),btn=$("#attackBtn"),log=$("#battleLog"),eMax=enemyHp;
+ btn.onclick=()=>{
+  btn.disabled=true;let dmg=atk+Math.floor(Math.random()*9);if(Math.random()<.12)dmg=Math.round(dmg*1.55);
+  pF.classList.add("attack");setTimeout(()=>{pF.classList.remove("attack");eF.classList.add("hit");enemyHp-=dmg;$("#eHpNum").textContent=Math.max(0,enemyHp);$("#eHpBar").style.width=Math.max(0,enemyHp/eMax*100)+"%";log.textContent=`${dmg}ダメージ。`;
+   setTimeout(()=>eF.classList.remove("hit"),180);
+   if(enemyHp<=0){
+    const heal=Math.ceil(s.maxHp*.30);s.hp=Math.min(s.maxHp,playerHp+heal);s.gems+=t==="boss"?6:t==="elite"?4:2;s.gold+=t==="boss"?35:t==="elite"?24:12;s.wins++;
+    log.textContent=`勝利。戦闘後にHPを${heal}回復。`;setTimeout(()=>t==="elite"||t==="boss"?modChoice():advance("戦闘に勝利した。"),650);return;
+   }
+   setTimeout(()=>{eF.classList.add("attack");setTimeout(()=>{eF.classList.remove("attack");pF.classList.add("hit");const hit=es.atk+Math.floor(Math.random()*5);playerHp-=hit;$("#pHpNum").textContent=Math.max(0,playerHp);$("#pHpBar").style.width=Math.max(0,playerHp/s.maxHp*100)+"%";log.textContent=`敵の反撃。${hit}ダメージ。`;setTimeout(()=>pF.classList.remove("hit"),180);
+    if(playerHp<=0){s.hp=0;s.runOver=true;s.msg="深層で力尽きた。";save();setTimeout(()=>showPage("home"),600)}else btn.disabled=false;
+   },170)},280);
+  },170);
+ };
+}
+function modChoice(){
+ const avail=mods.filter(m=>!has(m.id)).sort(()=>Math.random()-.5).slice(0,3);
+ if(!avail.length){advance("装置は完全改造済み。");return}
+ const enc=document.getElementById("encounter");
+ if(!enc)return;
+ enc.innerHTML=`<div class="panel mods" style="margin-top:10px"><div class="sectionTitle"><h2>改造を1つ選択</h2></div>${avail.map(m=>`<button class="btn ghost" style="width:100%;margin-top:6px" onclick="takeMod('${m.id}')">${m.name}<br><span class="sub">${m.desc}</span></button>`).join("")}</div>`;
+}
+window.takeMod=id=>{
+ s.mods.push(id);if(id==="cheap")s.tenCost=Math.max(6,s.tenCost-1);if(id==="extra")s.tenExtra++;
+ advance("「"+mods.find(m=>m.id===id).name+"」を装着した。");
+};
+function shop(){
+ document.getElementById("encounter").innerHTML=`<div class="panel" style="margin-top:10px"><div class="sectionTitle"><h2>漂泊商会</h2><span class="sub">所持 ●${s.gold}</span></div>
+ <button class="btn ghost" style="width:100%;margin-top:5px" onclick="buy('heal')">治療結晶　HP +30　●20</button>
+ <button class="btn ghost" style="width:100%;margin-top:5px" onclick="buy('gem')">魔晶石　✦ +4　●28</button>
+ <button class="btn primary" style="width:100%;margin-top:8px" onclick="advance('商会を後にした。')">店を出る</button></div>`;
+}
+window.buy=t=>{
+ if(t==="heal"&&s.gold>=20){s.gold-=20;s.hp=Math.min(s.maxHp,s.hp+30);advance("治療結晶を購入した。")}
+ else if(t==="gem"&&s.gold>=28){s.gold-=28;s.gems+=4;advance("魔晶石を購入した。")}
+};
+function eventNode(){
+ document.getElementById("encounter").innerHTML=`<div class="panel" style="margin-top:10px"><div class="sectionTitle"><h2>欠けた星晶碑</h2></div><p class="sub">古い装置が、代償と引き換えにガチャ装置へ干渉しようとしている。</p>
+ <button class="btn danger" style="width:100%;margin-top:6px" onclick="eventPick(1)">HP -20 → SR率 +1pt</button>
+ <button class="btn gold" style="width:100%;margin-top:6px" onclick="eventPick(2)">●25 → ✦5</button>
+ <button class="btn ghost" style="width:100%;margin-top:6px" onclick="advance('星晶碑を無視した。')">立ち去る</button></div>`;
+}
+window.eventPick=x=>{
+ if(x===1&&s.hp>20){s.hp-=20;s.srBonus++;advance("星晶碑と契約し、SR率を強化した。")}
+ else if(x===2&&s.gold>=25){s.gold-=25;s.gems+=5;advance("ゴールドを魔晶石へ変換した。")}
+};
+function advance(msg){
+ s.step++;s.lastChoices=null;s.msg=msg;s.lastResults=[];
+ if(s.step>20){s.step=20;s.runOver=true;s.msg="最上階を突破した。"}
+ save();showPage("run");
+}
+function sheet(inner){
+ document.getElementById("overlay").innerHTML=`<div class="modal" onclick="closeSheet(event)"><div class="sheet">${inner}<button class="btn ghost" style="width:100%;margin-top:12px" onclick="closeSheet()">閉じる</button></div></div>`;
+}
+window.closeSheet=e=>{if(!e||e.target.classList.contains("modal"))document.getElementById("overlay").innerHTML=""};
+window.showRates=()=>{
+ const r=rates();sheet(`<div class="sectionTitle"><h2>提供割合</h2></div><p class="sub">現在の改造をすべて反映した確率。</p><div class="rates"><div class="rate N"><b>${r.N.toFixed(1)}%</b>N</div><div class="rate R"><b>${r.R.toFixed(1)}%</b>R</div><div class="rate SR"><b>${r.SR.toFixed(1)}%</b>SR</div><div class="rate SSR"><b>${r.SSR.toFixed(1)}%</b>SSR</div></div>`);
+};
+window.showMods=()=>sheet(`<div class="sectionTitle"><h2>ガチャ装置・改造</h2></div><div class="mods">${s.mods.length?s.mods.map(id=>{const m=mods.find(x=>x.id===id);return`<div class="mod"><b>${m.name}</b><p>${m.desc}</p></div>`}).join(""):`<p class="sub">まだ改造されていない。</p>`}</div>`);
+window.resetRun=()=>{s=fresh();save();showPage("home")};
+window.showPage=p=>{
+ activate(p);
+ try{$("#app").innerHTML=p==="home"?home():p==="gacha"?gacha():p==="party"?party():run();save()}
+ catch(e){$("#app").innerHTML=header()+`<div class="panel"><h2>表示エラー</h2><p class="sub">${String(e.message||e)}</p><button class="btn danger" onclick="resetRun()">データをリセット</button></div>`}
+};
+showPage("home");
+})();
+</script>
+</body>
+</html>
