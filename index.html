@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>GACHA ROGUE v0.3</title>
+<style>
+:root{
+ --bg:#07101d;--panel:#121b2e;--panel2:#19253d;--card:#0f1728;--text:#f5f7ff;
+ --muted:#93a0bc;--line:#ffffff18;--accent:#7b6dff;--cyan:#55d8ff;--gold:#ffd166;
+ --danger:#ff6380;--green:#63e0a1;--purple:#bd82ff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#07101d;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{background:radial-gradient(circle at 50% -10%,#223865 0,#101a31 26%,#07101d 58%,#040812 100%)}
+button{font:inherit;touch-action:manipulation}
+#app{max-width:470px;margin:0 auto;min-height:100vh;padding:14px 14px 125px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.logo{font-size:15px;font-weight:900;letter-spacing:.12em}
+.res{display:flex;gap:6px}.pill{font-size:12px;background:#ffffff0d;border:1px solid var(--line);padding:7px 9px;border-radius:999px}
+.card{background:linear-gradient(180deg,#16213a,#10182a);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:11px;box-shadow:0 16px 35px #0004}
+.hero{position:relative;overflow:hidden;min-height:202px;background:
+ radial-gradient(circle at 75% 15%,#7b6dff33,transparent 25%),
+ linear-gradient(180deg,#1c2a4c,#10182c)}
+.hero:after{content:"";position:absolute;right:-14px;bottom:-10px;width:135px;height:190px;opacity:.92;
+ background:linear-gradient(90deg,#38456d,#7e58c7);
+ clip-path:polygon(43% 0,57% 0,64% 20%,72% 20%,78% 44%,88% 44%,98% 100%,2% 100%,12% 44%,22% 44%,28% 20%,36% 20%)}
+.hero .orb{position:absolute;right:37px;top:24px;width:58px;height:58px;border-radius:50%;border:2px solid #b787ff88;box-shadow:0 0 30px #b787ff88 inset,0 0 25px #7f5bff66;z-index:2}
+.hero .orb:after{content:"👁";display:grid;place-items:center;height:100%;font-size:25px}
+.heroText{position:relative;z-index:3;max-width:65%}
+.kicker{font-size:11px;color:#b9c4dd;letter-spacing:.14em;font-weight:900}
+h1,h2,h3,p{margin-top:0}h1{font-size:25px;margin-bottom:6px}h2{font-size:18px;margin-bottom:9px}h3{font-size:14px;margin-bottom:7px}
+.sub{font-size:12px;color:var(--muted);line-height:1.55}
+.hpwrap{margin-top:13px}.hphead{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.bar{height:11px;background:#ffffff10;border-radius:999px;overflow:hidden;border:1px solid #ffffff0d}
+.fill{height:100%;background:linear-gradient(90deg,#53d99a,#a1ee70)}
+.dangerfill{background:linear-gradient(90deg,#ff5e78,#ff9c64)}
+.progress{display:flex;gap:4px;margin-top:11px;align-items:center}.dot{width:10px;height:10px;border-radius:50%;background:#ffffff18}.dot.done{background:#7668ff}.dot.boss{background:#ff5c86}.dot.current{outline:2px solid #fff;outline-offset:2px}
+.party{display:flex;gap:8px;margin-top:12px}.avatar{width:50px;height:50px;border-radius:15px;background:linear-gradient(160deg,#314d7a,#1b253e);border:1px solid #ffffff20;display:grid;place-items:center;font-size:24px;position:relative}.avatar span{position:absolute;right:-3px;bottom:-3px;background:#0b1120;border:1px solid #ffffff20;border-radius:999px;font-size:8px;padding:2px 4px}
+.btn{width:100%;border:0;border-radius:14px;min-height:46px;padding:11px 12px;font-weight:900;color:white;background:linear-gradient(135deg,#8975ff,#6259ff);margin-top:8px}
+.btn.secondary{background:#263452}.btn.gold{background:linear-gradient(135deg,#d69e31,#ffc84d);color:#181109}.btn.danger{background:linear-gradient(135deg,#ff5d7b,#e34b68)}.btn.green{background:linear-gradient(135deg,#3fbd82,#61dda0);color:#07130d}.btn:disabled{opacity:.38}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.routeCard{padding:12px}.route{display:flex;gap:5px;align-items:center;overflow:hidden}.node{width:34px;height:34px;min-width:34px;border-radius:50%;display:grid;place-items:center;background:#ffffff0d;border:1px solid var(--line);font-size:16px}.node.current{background:#6d61ff44;outline:2px solid #8a7dff}.node.done{opacity:.45}.line{height:2px;flex:1;background:#ffffff18;min-width:8px}
+.option{background:#ffffff08;border:1px solid var(--line);border-radius:16px;padding:12px;min-height:126px;display:flex;flex-direction:column;justify-content:space-between}.option .ico{font-size:28px}.option .title{font-weight:900;margin-top:4px}.option .desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:5px}.option .risk{font-size:10px;margin-top:7px;color:#f2c16f}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#ffffff08;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}.stat b{display:block;font-size:17px}.stat small{font-size:10px;color:var(--muted)}
+.rates{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.rate{text-align:center;padding:8px 4px;border-radius:11px;background:#ffffff08;border:1px solid var(--line);font-size:11px}.rate b{display:block;font-size:14px}
+.N{color:#bcc5d3}.R{color:#69d5ff}.SR{color:#b887ff}.SSR{color:#ffd166}
+.mod{padding:10px 0;border-bottom:1px solid #ffffff0d}.mod:last-child{border-bottom:0}.modTitle{font-weight:800;font-size:13px}.modDesc{font-size:11px;color:var(--muted);margin-top:3px}
+.log{max-height:190px;overflow:auto;background:#070b14;border:1px solid #ffffff0d;border-radius:12px;padding:9px;font-size:11px;line-height:1.55;color:#cbd4e8}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #ffffff0d}.row:last-child{border-bottom:0}
+.resultGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}.pull{background:#ffffff08;border:1px solid var(--line);border-radius:11px;padding:8px 3px;text-align:center;font-size:10px}.pull .face{font-size:22px}.pull b{display:block;margin-top:3px}
+.shopItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff0d}.shopItem:last-child{border-bottom:0}.shopItem .info{min-width:0}.shopItem .info b{font-size:13px}.shopItem .info div{font-size:10px;color:var(--muted);margin-top:2px}
+.navwrap{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,#07101d 25%,#07101d)}
+.nav{max-width:470px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#111a2eea;border:1px solid var(--line);border-radius:18px;padding:7px;backdrop-filter:blur(12px)}
+.nav button{border:0;background:transparent;color:#8f9bb6;padding:9px 2px;border-radius:11px;font-size:11px;font-weight:900;min-height:44px}.nav button.active{background:#ffffff0e;color:white}
+.notice{padding:9px 10px;border-radius:12px;background:#ffffff08;border:1px solid var(--line);font-size:11px;color:#c7d1e6;margin-top:9px}
+@media(max-width:350px){.choices{grid-template-columns:1fr}.resultGrid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="navwrap"><div class="nav">
+<button id="nav-home" onclick="showPage('home')">🏠<br>拠点</button>
+<button id="nav-gacha" onclick="showPage('gacha')">💠<br>ガチャ</button>
+<button id="nav-party" onclick="showPage('party')">👥<br>編成</button>
+<button id="nav-run" onclick="showPage('run')">🗺<br>進行</button>
+</div></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="gachaRogueV03";
+var faces={N:["🗡","🛡","🏹"],R:["🌿","⚡","🌊"],SR:["🔥","🌙","❄️"],SSR:["👑","💎","🌌"]};
+var baseChars={
+ N:[{n:"兵士",a:5,h:24},{n:"衛士",a:4,h:30},{n:"斥候",a:6,h:21}],
+ R:[{n:"ハナ",a:8,h:34},{n:"クロ",a:9,h:31},{n:"シロ",a:7,h:38}],
+ SR:[{n:"レイナ",a:12,h:45},{n:"ミラ",a:11,h:50},{n:"アイリス",a:13,h:42}],
+ SSR:[{n:"ノア",a:16,h:54},{n:"ルナ",a:15,h:58},{n:"アストラ",a:18,h:48}]
+};
+var allMods=[
+ {id:"rateR",name:"青晶増幅",desc:"R以上の排出率 +5pt",type:"rateR"},
+ {id:"rateSR",name:"紫晶増幅",desc:"SR以上の排出率 +1pt",type:"rateSR"},
+ {id:"pityR",name:"三連補正",desc:"Nを3回連続で引くと次回R以上",type:"pityR"},
+ {id:"freeSR",name:"共鳴抽選",desc:"SR以上を引くと無料単発を1回得る",type:"freeSR"},
+ {id:"cheap10",name:"圧縮召喚",desc:"10連コスト -1（最低6）",type:"cheap10"},
+ {id:"extra10",name:"増設槽",desc:"10連の排出数 +1",type:"extra10"},
+ {id:"healR",name:"生命変換",desc:"Rを引くたびHPを最大HPの3%回復",type:"healR"},
+ {id:"refundN",name:"残滓回収",desc:"Nを引くたび25%で石+1",type:"refundN"}
+];
+function fresh(){
+ return {gems:14,gold:40,step:1,maxStep:20,hp:100,maxHp:100,roster:[],party:[],mods:[],
+  rBonus:0,srBonus:0,ssrBonus:0,tenCost:9,tenExtra:0,freePulls:0,nStreak:0,nextId:1,
+  wins:0,eliteWins:0,runOver:false,lastChoices:null,lastResults:[],message:""};
+}
+var s=fresh();
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&typeof o==="object")s=o}}catch(e){s=fresh()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+window.resetRun=function(){try{localStorage.removeItem(KEY)}catch(e){}s=fresh();showPage("home")}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function hasMod(id){for(var i=0;i<s.mods.length;i++)if(s.mods[i]===id)return true;return false}
+function activeMods(){var arr=[];for(var i=0;i<allMods.length;i++)if(hasMod(allMods[i].id))arr.push(allMods[i]);return arr}
+function rates(){
+ var ssr=0.5+s.ssrBonus;
+ var sr=4.5+s.srBonus;
+ var r=20+s.rBonus;
+ if(hasMod("rateR")) r+=5;
+ if(hasMod("rateSR")) sr+=1;
+ var n=100-r-sr-ssr;
+ return {N:Math.max(0,n),R:r,SR:sr,SSR:ssr};
+}
+function pickRarity(forceR){
+ var rt=rates(),x=Math.random()*100;
+ if(forceR){
+   var total=rt.R+rt.SR+rt.SSR, y=Math.random()*total;
+   if(y<rt.SSR)return "SSR"; if(y<rt.SSR+rt.SR)return "SR"; return "R";
+ }
+ if(x<rt.SSR)return "SSR";
+ if(x<rt.SSR+rt.SR)return "SR";
+ if(x<rt.SSR+rt.SR+rt.R)return "R";
+ return "N";
+}
+function makeChar(r){
+ var pool=baseChars[r],b=pool[Math.floor(Math.random()*pool.length)];
+ var icon=faces[r][Math.floor(Math.random()*faces[r].length)];
+ return {id:s.nextId++,n:b.n,r:r,a:b.a,h:b.h,icon:icon};
+}
+function pullOne(){
+ var force=hasMod("pityR")&&s.nStreak>=3;
+ var r=pickRarity(force),c=makeChar(r);
+ if(r==="N")s.nStreak++; else s.nStreak=0;
+ if((r==="SR"||r==="SSR")&&hasMod("freeSR"))s.freePulls++;
+ if(r==="R"&&hasMod("healR"))s.hp=clamp(s.hp+Math.ceil(s.maxHp*.03),0,s.maxHp);
+ if(r==="N"&&hasMod("refundN")&&Math.random()<.25)s.gems++;
+ s.roster.push(c);
+ if(s.party.length<3)s.party.push(c.id);
+ return c;
+}
+function header(){
+ return '<div class="top"><div class="logo">GACHA ROGUE</div><div class="res"><span class="pill">💎 '+s.gems+'</span><span class="pill">🪙 '+s.gold+'</span></div></div>';
+}
+function activate(p){["home","gacha","party","run"].forEach(function(n){var b=document.getElementById("nav-"+n);if(b)b.className=n===p?"active":""})}
+function hpPct(){return clamp(Math.round(s.hp/s.maxHp*100),0,100)}
+function partyObjs(){var out=[];for(var i=0;i<s.party.length;i++){for(var j=0;j<s.roster.length;j++)if(s.roster[j].id===s.party[i])out.push(s.roster[j])}return out}
+function partyPower(){var p=partyObjs(),v=0;for(var i=0;i<p.length;i++)v+=p[i].a*2+p[i].h*.25;return Math.round(v)}
+function hero(){
+ var p=partyObjs(),av="";
+ for(var i=0;i<3;i++){var c=p[i];av+=c?'<div class="avatar">'+c.icon+'<span>'+c.r+'</span></div>':'<div class="avatar">＋</div>'}
+ var dots="";for(var k=1;k<=20;k++){var cl="dot";if(k<s.step)cl+=" done";if(k===s.step)cl+=" current";if(k%5===0)cl+=" boss";dots+='<span class="'+cl+'"></span>'}
+ return '<div class="card hero"><div class="orb"></div><div class="heroText"><div class="kicker">RUN '+s.step+' / 20</div><h1>塔を登れ</h1><p class="sub">強いガチャを作りながら、最上階を目指す。</p>'+
+ '<div class="hpwrap"><div class="hphead"><span>HP</span><b>'+s.hp+' / '+s.maxHp+'</b></div><div class="bar"><div class="fill '+(hpPct()<35?'dangerfill':'')+'" style="width:'+hpPct()+'%"></div></div></div>'+
+ '<div class="party">'+av+'</div></div></div><div class="card routeCard"><div class="route">'+dots+'</div></div>';
+}
+function pageHome(){
+ return hero()+'<div class="stats"><div class="stat"><b>'+partyPower()+'</b><small>戦力</small></div><div class="stat"><b>'+s.mods.length+'</b><small>改造</small></div><div class="stat"><b>'+s.wins+'</b><small>勝利</small></div></div>'+
+ '<div class="card"><button class="btn" onclick="showPage(\'run\')">次のマスへ</button><button class="btn secondary" onclick="showPage(\'gacha\')">ガチャを確認</button></div>'+
+ (s.message?'<div class="notice">'+s.message+'</div>':'')+
+ '<div class="card"><h3>このランの改造</h3>'+modsHtml()+'<button class="btn danger" onclick="resetRun()">ランを最初から</button></div>';
+}
+function modsHtml(){
+ var m=activeMods();if(!m.length)return '<p class="sub">まだ改造なし。</p>';
+ var h="";for(var i=0;i<m.length;i++)h+='<div class="mod"><div class="modTitle">◆ '+m[i].name+'</div><div class="modDesc">'+m[i].desc+'</div></div>';return h;
+}
+function pageGacha(){
+ var rt=rates(),cost=Math.max(6,s.tenCost);
+ var h='<div class="card"><h2>召喚装置</h2><div class="rates"><div class="rate N"><b>'+rt.N.toFixed(1)+'%</b>N</div><div class="rate R"><b>'+rt.R.toFixed(1)+'%</b>R</div><div class="rate SR"><b>'+rt.SR.toFixed(1)+'%</b>SR</div><div class="rate SSR"><b>'+rt.SSR.toFixed(1)+'%</b>SSR</div></div>'+
+ '<button class="btn" onclick="doPull(1,1)" '+(s.gems<1?'disabled':'')+'>単発 💎1</button>'+
+ '<button class="btn gold" onclick="doPull(10,'+cost+')" '+(s.gems<cost?'disabled':'')+'>10連 💎'+cost+(s.tenExtra?' ＋'+s.tenExtra+'枠':'')+'</button>';
+ if(s.freePulls>0)h+='<button class="btn green" onclick="doFreePull()">無料単発 ×'+s.freePulls+'</button>';
+ h+='<div id="pullResults">'+renderPulls()+'</div></div><div class="card"><h3>現在の改造</h3>'+modsHtml()+'</div>';
+ return h;
+}
+function renderPulls(){
+ if(!s.lastResults||!s.lastResults.length)return '<p class="sub" style="margin-top:10px">まだ召喚結果なし。</p>';
+ var h='<div class="resultGrid">';for(var i=0;i<s.lastResults.length;i++){var c=s.lastResults[i];h+='<div class="pull"><div class="face">'+c.icon+'</div><b class="'+c.r+'">'+c.r+'</b><span>'+c.n+'</span></div>'}return h+'</div>';
+}
+window.doPull=function(count,cost){
+ if(s.gems<cost)return;s.gems-=cost;var total=count+(count===10?s.tenExtra:0),arr=[];for(var i=0;i<total;i++)arr.push(pullOne());s.lastResults=arr;save();showPage("gacha")
+}
+window.doFreePull=function(){if(s.freePulls<=0)return;s.freePulls--;s.lastResults=[pullOne()];save();showPage("gacha")}
+function pageParty(){
+ var h='<div class="card"><h2>パーティ編成</h2><p class="sub">最大3人。高レアだけでなくHPも重要。</p><div style="margin-top:10px">';
+ if(!s.roster.length)h+='<p class="sub">まだ仲間がいない。</p>';
+ for(var i=0;i<s.roster.length;i++){var c=s.roster[i],sel=s.party.indexOf(c.id)!==-1;h+='<button class="btn '+(sel?'':'secondary')+'" onclick="toggleParty('+c.id+')">'+c.icon+' <span class="'+c.r+'">'+c.r+'</span> '+c.n+'　ATK '+c.a+' / HP '+c.h+'</button>'}
+ return h+'</div></div>';
+}
+window.toggleParty=function(id){var k=s.party.indexOf(id);if(k>=0)s.party.splice(k,1);else if(s.party.length<3)s.party.push(id);save();showPage("party")}
+function choicesForStep(){
+ var pool=["battle","battle","event","rest","shop","mod","skip"];
+ if(s.step>=5)pool.push("elite");
+ if(s.step%5===0)return ["boss"];
+ var a=pool[Math.floor(Math.random()*pool.length)],b=pool[Math.floor(Math.random()*pool.length)];
+ while(b===a)b=pool[Math.floor(Math.random()*pool.length)];
+ return [a,b];
+}
+function choiceMeta(t){
+ var map={
+ battle:{ico:"⚔️",title:"戦闘",desc:"石とゴールド。戦闘後HP30%回復。",risk:"標準リスク"},
+ elite:{ico:"☠️",title:"エリート",desc:"強敵。勝てば改造を確定獲得。",risk:"高リスク / 高報酬"},
+ rest:{ico:"⛺",title:"休息",desc:"最大HPの45%回復。報酬なし。",risk:"安全"},
+ shop:{ico:"🛒",title:"ショップ",desc:"ゴールドで回復や石を購入。",risk:"戦闘なし"},
+ event:{ico:"❓",title:"イベント",desc:"ランダムな取引や選択肢。",risk:"結果は不明"},
+ mod:{ico:"🔧",title:"改造工房",desc:"ガチャのルールを変える。",risk:"戦闘なし"},
+ skip:{ico:"🚪",title:"迂回",desc:"何も得ない代わりに安全に進む。",risk:"完全安全"},
+ boss:{ico:"👁️",title:"階層ボス",desc:"5マスごとの関門。大報酬あり。",risk:"ボス戦"}
+ };return map[t];
+}
+function pageRun(){
+ if(s.runOver)return '<div class="card hero"><div class="heroText"><div class="kicker">RUN CLEAR</div><h1>最上階制覇</h1><p class="sub">完成したガチャで塔を制した。</p></div></div><div class="card"><button class="btn" onclick="resetRun()">新しいラン</button></div>';
+ var choices=s.lastChoices||choicesForStep();s.lastChoices=choices;save();
+ var h=hero()+'<div class="card"><h2>進路を選ぶ</h2><div class="choices">';
+ for(var i=0;i<choices.length;i++){var m=choiceMeta(choices[i]);h+='<div class="option"><div><div class="ico">'+m.ico+'</div><div class="title">'+m.title+'</div><div class="desc">'+m.desc+'</div><div class="risk">'+m.risk+'</div></div><button class="btn secondary" onclick="takeNode(\''+choices[i]+'\')">選ぶ</button></div>'}
+ h+='</div></div><div id="encounter"></div>';return h;
+}
+window.takeNode=function(t){
+ if(t==="battle")startBattle(false,false);
+ else if(t==="elite")startBattle(false,true);
+ else if(t==="boss")startBattle(true,false);
+ else if(t==="rest"){s.hp=clamp(s.hp+Math.ceil(s.maxHp*.45),0,s.maxHp);advance("休息してHPを回復した。");}
+ else if(t==="skip"){advance("危険を避けて先へ進んだ。");}
+ else if(t==="shop")showShop();
+ else if(t==="event")showEvent();
+ else if(t==="mod")showModChoice(false);
+}
+function battleStats(boss,elite){
+ var prog=s.step/20;
+ var hp=55+Math.round(prog*130),atk=7+Math.round(prog*12);
+ if(elite){hp=Math.round(hp*1.55);atk=Math.round(atk*1.35)}
+ if(boss){hp=Math.round(hp*1.8);atk=Math.round(atk*1.45)}
+ return {hp:hp,atk:atk};
+}
+function startBattle(boss,elite){
+ var p=partyObjs();if(!p.length){alert("先にガチャで仲間を集めよう");return}
+ var e=battleStats(boss,elite),eHP=e.hp,pHP=s.hp;
+ var atk=0;for(var i=0;i<p.length;i++)atk+=p[i].a;
+ var enc=document.getElementById("encounter");
+ enc.innerHTML='<div class="card"><h2>'+(boss?"階層ボス":elite?"エリート":"敵部隊")+'</h2>'+
+ '<div class="row"><span>あなた</span><b id="php">'+pHP+' HP</b></div><div class="row"><span>敵</span><b id="ehp">'+eHP+' HP</b></div>'+
+ '<button class="btn danger" id="attackBtn">攻撃</button><div class="log" id="log"></div></div>';
+ function log(x){var l=document.getElementById("log");l.innerHTML+=x+"<br>";l.scrollTop=l.scrollHeight}
+ document.getElementById("attackBtn").onclick=function(){
+  var dmg=atk+Math.floor(Math.random()*9);if(Math.random()<.12){dmg=Math.round(dmg*1.55);log("クリティカル！")}
+  eHP-=dmg;log("味方 "+dmg+" ダメージ");
+  if(eHP<=0){
+   document.getElementById("ehp").textContent="0 HP";
+   var heal=Math.ceil(s.maxHp*.30);s.hp=clamp(pHP+heal,0,s.maxHp);
+   var gr=boss?6:elite?4:2,go=boss?35:elite?24:12;
+   s.gems+=gr;s.gold+=go;s.wins++;if(elite)s.eliteWins++;
+   document.getElementById("attackBtn").disabled=true;
+   log("勝利。戦闘後 "+heal+" HP回復。");
+   if(elite||boss){setTimeout(function(){showModChoice(boss)},450)}else setTimeout(function(){advance("戦闘に勝利した。")},650);
+   return;
+  }
+  var hit=e.atk+Math.floor(Math.random()*5);pHP-=hit;log("敵 "+hit+" ダメージ");document.getElementById("php").textContent=Math.max(0,pHP)+" HP";document.getElementById("ehp").textContent=Math.max(0,eHP)+" HP";
+  if(pHP<=0){s.hp=0;document.getElementById("attackBtn").disabled=true;log("敗北。ラン終了。");setTimeout(function(){s.runOver=true;s.message="力尽きた。";save();showPage("home")},800)}
+ };
+}
+function showModChoice(fromBoss){
+ var available=[];for(var i=0;i<allMods.length;i++)if(!hasMod(allMods[i].id))available.push(allMods[i]);
+ if(!available.length){advance("改造候補をすべて取得済み。");return}
+ available.sort(function(){return Math.random()-.5});available=available.slice(0,3);
+ var enc=document.getElementById("encounter");if(!enc)return;
+ var h='<div class="card"><h2>改造を1つ選ぶ</h2>';
+ for(var j=0;j<available.length;j++){var m=available[j];h+='<button class="btn secondary" onclick="takeMod(\''+m.id+'\')"><b>'+m.name+'</b><br><span style="font-size:10px">'+m.desc+'</span></button>'}
+ enc.innerHTML=h+'</div>';
+}
+window.takeMod=function(id){
+ s.mods.push(id);
+ if(id==="cheap10")s.tenCost=Math.max(6,s.tenCost-1);
+ if(id==="extra10")s.tenExtra++;
+ advance("ガチャ改造を獲得した。");
+}
+function showShop(){
+ var enc=document.getElementById("encounter");enc.innerHTML='<div class="card"><h2>ショップ</h2>'+
+ '<div class="shopItem"><div class="info"><b>治療薬</b><div>HP +30</div></div><button class="btn secondary" style="width:auto" onclick="buy(\'heal\')">🪙20</button></div>'+
+ '<div class="shopItem"><div class="info"><b>魔晶石</b><div>石 +4</div></div><button class="btn secondary" style="width:auto" onclick="buy(\'gem\')">🪙28</button></div>'+
+ '<button class="btn" onclick="advance(\'何も買わず店を出た。\')">店を出る</button></div>';
+}
+window.buy=function(t){
+ if(t==="heal"){if(s.gold<20)return;s.gold-=20;s.hp=clamp(s.hp+30,0,s.maxHp);advance("治療薬を購入した。")}
+ if(t==="gem"){if(s.gold<28)return;s.gold-=28;s.gems+=4;advance("魔晶石を購入した。")}
+}
+function showEvent(){
+ var enc=document.getElementById("encounter");
+ enc.innerHTML='<div class="card"><h2>謎の祭壇</h2><p class="sub">紫の結晶が脈打っている。</p>'+
+ '<button class="btn danger" onclick="eventTake(1)">HPを20失う → SR率 +1pt</button>'+
+ '<button class="btn gold" onclick="eventTake(2)">🪙25払う → 石 +5</button>'+
+ '<button class="btn secondary" onclick="advance(\'祭壇を無視した。\')">何もしない</button></div>';
+}
+window.eventTake=function(x){
+ if(x===1){if(s.hp<=20)return;s.hp-=20;s.srBonus+=1;advance("HPを代償にSR率を強化した。")}
+ if(x===2){if(s.gold<25)return;s.gold-=25;s.gems+=5;advance("ゴールドを石に変換した。")}
+}
+function advance(msg){
+ s.step++;s.lastChoices=null;s.message=msg;
+ if(s.step>20){s.runOver=true;s.step=20;s.message="最上階を突破した！"}
+ save();showPage("run");
+}
+window.showPage=function(page){
+ activate(page);var app=document.getElementById("app");var h=header();
+ if(page==="gacha")h+=pageGacha();else if(page==="party")h+=pageParty();else if(page==="run")h+=pageRun();else h+=pageHome();
+ app.innerHTML=h;save();
+}
+load();showPage("home");
+})();
+</script>
+</body>
+</html>
